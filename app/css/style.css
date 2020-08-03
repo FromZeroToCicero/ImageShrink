@@ -1,0 +1,42 @@
+.container {
+  width: 400px;
+  margin-top: 70px;
+  padding: 0 20px;
+}
+
+.about {
+  width: 100%;
+}
+
+.btn {
+  width: 100%;
+}
+
+.btn-browse {
+  margin-bottom: 7px;
+}
+
+.output {
+  margin-top: 40px;
+}
+
+.output-loading {
+  margin-top: 20px;
+}
+
+.file-path-wrapper {
+  padding-left: 1px !important;
+  margin-right: 1px;
+}
+
+.hidden {
+  display: none;
+}
+
+.spinner-container {
+  margin-top: 20px;
+}
+
+#output-path {
+  font-weight: bold;
+}
