@@ -1,11 +1,11 @@
 const path = require("path");
 const os = require("os");
-const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain, shell, dialog } = require("electron");
 const imagemin = require("imagemin");
 const imageminMozjpeg = require("imagemin-mozjpeg");
 const imageminPngquant = require("imagemin-pngquant");
 const slash = require("slash");
-const log = require('electron-log');
+const log = require("electron-log");
 
 process.env.NODE_ENV = "production";
 
@@ -25,7 +25,7 @@ function createMainWindow() {
     backgroundColor: "#fff",
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
     },
   });
 
@@ -116,8 +116,16 @@ const menu = [
 ];
 
 ipcMain.on("image:minimize", (e, options) => {
-  options.dest = path.join(os.homedir(), "imageshrink");
   shrinkImage(options);
+});
+
+ipcMain.on("image:choose-path", async (e) => {
+  const chosenOutputPath = await dialog.showOpenDialog({
+    properties: ["openDirectory", "openFile"],
+  });
+  if (chosenOutputPath.filePaths[0]) {
+    mainWindow.webContents.send("image:selected-output", chosenOutputPath.filePaths[0]);
+  }
 });
 
 async function shrinkImage({ imgPath, quality, dest }) {
@@ -131,7 +139,7 @@ async function shrinkImage({ imgPath, quality, dest }) {
 
     shell.openPath(dest);
 
-    mainWindow.webContents.send('image:optimised');
+    mainWindow.webContents.send("image:optimised");
   } catch (err) {
     log.error(err);
   }
