@@ -7,6 +7,9 @@ const imageminPngquant = require("imagemin-pngquant");
 const slash = require("slash");
 const log = require("electron-log");
 
+const Store = require("./Store");
+const { createMenuTemplate } = require("./Menu");
+
 process.env.NODE_ENV = "production";
 
 const isDev = process.env.NODE_ENV !== "production" ? true : false;
@@ -14,6 +17,15 @@ const isMac = process.platform === "darwin" ? true : false;
 
 let mainWindow;
 let aboutWindow;
+
+const store = new Store({
+  configName: "user-settings",
+  defaults: {
+    settings: {
+      outputPath: path.join(os.homedir(), "imageshrink"),
+    },
+  },
+});
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -52,80 +64,36 @@ function createAboutWindow() {
 app.on("ready", () => {
   createMainWindow();
 
-  const mainMenu = Menu.buildFromTemplate(menu);
+  mainWindow.webContents.on("dom-ready", () => {
+    mainWindow.webContents.send("settings:get", store.get("settings"));
+  });
+
+  const mainMenu = Menu.buildFromTemplate(createMenuTemplate(isMac, isDev, app, createAboutWindow));
   Menu.setApplicationMenu(mainMenu);
 
   mainWindow.on("closed", () => (mainWindow = null));
 });
-
-const menu = [
-  ...(isMac
-    ? [
-        {
-          label: app.name,
-          submenu: [
-            {
-              label: "About",
-              click: createAboutWindow,
-            },
-            {
-              label: "Quit",
-              click: () => app.quit(),
-            },
-          ],
-        },
-      ]
-    : []),
-  {
-    role: "fileMenu",
-  },
-  ...(!isMac
-    ? [
-        {
-          label: "Help",
-          submenu: [
-            {
-              label: "About",
-              click: createAboutWindow,
-            },
-          ],
-        },
-      ]
-    : []),
-  ...(isDev
-    ? [
-        {
-          label: "Developer",
-          submenu: [
-            {
-              role: "reload",
-            },
-            {
-              role: "forcereload",
-            },
-            {
-              type: "separator",
-            },
-            {
-              role: "toggledevtools",
-            },
-          ],
-        },
-      ]
-    : []),
-];
 
 ipcMain.on("image:minimize", (e, options) => {
   shrinkImage(options);
 });
 
 ipcMain.on("image:choose-path", async (e) => {
+  mainWindow.webContents.send("image:select-output-pending");
+
   const chosenOutputPath = await dialog.showOpenDialog({
     properties: ["openDirectory", "openFile"],
   });
   if (chosenOutputPath.filePaths[0]) {
     mainWindow.webContents.send("image:selected-output", chosenOutputPath.filePaths[0]);
+  } else {
+    mainWindow.webContents.send("image:select-output-finished");
   }
+});
+
+ipcMain.on("settings:set", (e, settings) => {
+  store.set("settings", settings);
+  mainWindow.webContents.send("settings:get", store.get("settings"));
 });
 
 async function shrinkImage({ imgPath, quality, dest }) {

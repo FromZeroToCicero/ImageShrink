@@ -6,13 +6,12 @@ const form = document.getElementById("image-form");
 const slider = document.getElementById("slider");
 const img = document.getElementById("img");
 const spinner = document.getElementById("spinner");
+const outputSpinner = document.getElementById("output-spinner");
 const submitBtn = document.getElementById("submit-btn");
 const output = document.getElementById("output");
 const editIcon = document.getElementById("edit-icon");
 
-let outputPath = path.join(os.homedir(), "imageshrink");
-
-document.getElementById("output-path").innerText = outputPath;
+let outputPath;
 
 // On upload image
 img.addEventListener("change", (e) => {
@@ -58,11 +57,32 @@ ipcRenderer.on("image:optimised", () => {
   });
 });
 
+ipcRenderer.on("image:select-output-pending", () => {
+  outputSpinner.classList.remove("hidden");
+});
+
+ipcRenderer.on("image:select-output-finished", () => {
+  outputSpinner.classList.add("hidden");
+});
+
+// Get settings
+ipcRenderer.on("settings:get", (e, settings) => {
+  outputPath = settings.outputPath;
+  const displayOutputPath = formatOutputPath(outputPath);
+  document.getElementById("output-path").innerText = displayOutputPath;
+});
+
 // On chosen output path
 ipcRenderer.on("image:selected-output", (e, path) => {
   outputPath = path;
   const displayOutputPath = formatOutputPath(path);
   document.getElementById("output-path").innerText = displayOutputPath;
+
+  outputSpinner.classList.add("hidden");
+
+  ipcRenderer.send("settings:set", {
+    outputPath: path,
+  });
 });
 
 function formatOutputPath(path) {

@@ -42,6 +42,12 @@
   margin-top: 20px;
 }
 
+.output-spinner {
+  width: 15px !important;
+  height: 15px !important;
+  margin: 5px 0px -2px 5px !important;
+}
+
 #output-path {
   font-weight: bold;
 }
