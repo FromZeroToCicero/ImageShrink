@@ -1,5 +1,3 @@
-const path = require("path");
-const os = require("os");
 const { ipcRenderer } = require("electron");
 
 const form = document.getElementById("image-form");
@@ -57,10 +55,23 @@ ipcRenderer.on("image:optimised", () => {
   });
 });
 
+// On image failed optimise
+ipcRenderer.on("image:not-optimised", () => {
+  spinner.classList.add("hidden");
+  output.classList.remove("output-loading");
+  output.classList.add("output");
+
+  M.toast({
+    html: `Failed to resize image.`,
+  });
+});
+
+// On select output path for image
 ipcRenderer.on("image:select-output-pending", () => {
   outputSpinner.classList.remove("hidden");
 });
 
+// On finish select output path
 ipcRenderer.on("image:select-output-finished", () => {
   outputSpinner.classList.add("hidden");
 });
@@ -72,7 +83,7 @@ ipcRenderer.on("settings:get", (e, settings) => {
   document.getElementById("output-path").innerText = displayOutputPath;
 });
 
-// On chosen output path
+// On receiving chosen output path
 ipcRenderer.on("image:selected-output", (e, path) => {
   outputPath = path;
   const displayOutputPath = formatOutputPath(path);

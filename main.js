@@ -101,13 +101,16 @@ async function shrinkImage({ imgPath, quality, dest }) {
     const pngQuality = quality / 100;
     const files = await imagemin([slash(imgPath)], {
       destination: dest,
-      plugins: [imageminMozjpeg({ quality }), imageminPngquant({ pngQuality, pngQuality })],
+      plugins: [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] })],
     });
     log.info(files);
 
-    shell.openPath(dest);
-
-    mainWindow.webContents.send("image:optimised");
+    if (files.length) {
+      shell.openPath(dest);
+      mainWindow.webContents.send("image:optimised");
+    } else {
+      mainWindow.webContents.send("image:not-optimised");
+    }
   } catch (err) {
     log.error(err);
   }
