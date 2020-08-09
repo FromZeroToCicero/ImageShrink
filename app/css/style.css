@@ -1,6 +1,6 @@
 .container {
   width: 400px;
-  margin-top: 70px;
+  margin-top: 60px;
   padding: 0 20px;
 }
 
@@ -40,6 +40,10 @@
 
 .spinner-container {
   margin-top: 20px;
+}
+
+.switch-container {
+  margin-bottom: 25px;
 }
 
 .output-spinner {

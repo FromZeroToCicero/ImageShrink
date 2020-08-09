@@ -4,6 +4,8 @@ const { app, BrowserWindow, Menu, ipcMain, shell, dialog } = require("electron")
 const imagemin = require("imagemin");
 const imageminMozjpeg = require("imagemin-mozjpeg");
 const imageminPngquant = require("imagemin-pngquant");
+const imageminJpegtran = require("imagemin-jpegtran");
+const imageminOptipng = require("imagemin-optipng");
 const slash = require("slash");
 const log = require("electron-log");
 
@@ -17,6 +19,7 @@ const isMac = process.platform === "darwin" ? true : false;
 
 let mainWindow;
 let aboutWindow;
+let compressType = "lossy";
 
 const store = new Store({
   configName: "user-settings",
@@ -74,6 +77,10 @@ app.on("ready", () => {
   mainWindow.on("closed", () => (mainWindow = null));
 });
 
+ipcMain.on("image:compress-type", (e, type) => {
+  compressType = type ? "lossy" : "lossless";
+});
+
 ipcMain.on("image:minimize", (e, options) => {
   shrinkImage(options);
 });
@@ -99,9 +106,17 @@ ipcMain.on("settings:set", (e, settings) => {
 async function shrinkImage({ imgPath, quality, dest }) {
   try {
     const pngQuality = quality / 100;
+
+    let plugins;
+    if (compressType === "lossy") {
+      plugins = [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] })];
+    } else {
+      plugins = [imageminJpegtran(), imageminOptipng()];
+    }
+
     const files = await imagemin([slash(imgPath)], {
       destination: dest,
-      plugins: [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] })],
+      plugins,
     });
     log.info(files);
 
@@ -125,5 +140,8 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createMainWindow();
+    mainWindow.webContents.on("dom-ready", () => {
+      mainWindow.webContents.send("settings:get", store.get("settings"));
+    });
   }
 });

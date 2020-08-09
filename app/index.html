@@ -25,13 +25,24 @@
           </div>
         </div>
 
-        <p>
-          <strong>Quality:</strong>
-          <em>The lower the quality, the smaller the file size</em>
-        </p>
-        <p class="range-field">
-          <input type="range" min="0" max="100" id="slider" />
-        </p>
+        <div id="switch-container" class="switch">
+          <label>
+            Lossless
+            <input id="compress-type" type="checkbox" checked>
+            <span class="lever"></span>
+            Lossy
+          </label>
+        </div>
+
+        <div id="quality-container">
+          <p>
+            <strong>Quality:</strong>
+            <em>The lower the quality, the smaller the file size</em>
+          </p>
+          <p class="range-field">
+            <input type="range" min="0" max="100" id="slider" />
+          </p>
+        </div>
 
         <input id="submit-btn" type="submit" value="Resize" class="btn black disabled" />
       </form>

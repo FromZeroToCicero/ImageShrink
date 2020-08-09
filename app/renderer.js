@@ -5,11 +5,28 @@ const slider = document.getElementById("slider");
 const img = document.getElementById("img");
 const spinner = document.getElementById("spinner");
 const outputSpinner = document.getElementById("output-spinner");
+const compressType = document.getElementById("compress-type");
+const switchContainer = document.getElementById("switch-container");
+const qualityContainer = document.getElementById("quality-container");
 const submitBtn = document.getElementById("submit-btn");
 const output = document.getElementById("output");
 const editIcon = document.getElementById("edit-icon");
 
 let outputPath;
+
+compressType.addEventListener("change", (e) => {
+  e.preventDefault();
+
+  if (compressType.checked) {
+    qualityContainer.classList.remove("hidden");
+    switchContainer.classList.remove("switch-container");
+  } else {
+    qualityContainer.classList.add("hidden");
+    switchContainer.classList.add("switch-container");
+  }
+
+  ipcRenderer.send("image:compress-type", compressType.checked);
+});
 
 // On upload image
 img.addEventListener("change", (e) => {
@@ -50,8 +67,15 @@ ipcRenderer.on("image:optimised", () => {
   output.classList.remove("output-loading");
   output.classList.add("output");
 
+  let alertText;
+  if (compressType.checked) {
+    alertText = `Image resized to ${slider.value}% quality.`;
+  } else {
+    alertText = "Image resized successfully.";
+  }
+
   M.toast({
-    html: `Image resized to ${slider.value}% quality.`,
+    html: alertText,
   });
 });
 
