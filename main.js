@@ -6,6 +6,8 @@ const imageminMozjpeg = require("imagemin-mozjpeg");
 const imageminPngquant = require("imagemin-pngquant");
 const imageminJpegtran = require("imagemin-jpegtran");
 const imageminOptipng = require("imagemin-optipng");
+const imageminGiflossy = require("imagemin-giflossy");
+const imageminGifsicle = require("imagemin-gifsicle");
 const slash = require("slash");
 const log = require("electron-log");
 
@@ -71,7 +73,7 @@ app.on("ready", () => {
     mainWindow.webContents.send("settings:get", store.get("settings"));
   });
 
-  const mainMenu = Menu.buildFromTemplate(createMenuTemplate(isMac, isDev, app, createAboutWindow));
+  const mainMenu = Menu.buildFromTemplate(createMenuTemplate(isMac, isDev, app, createAboutWindow, mainWindow));
   Menu.setApplicationMenu(mainMenu);
 
   mainWindow.on("closed", () => (mainWindow = null));
@@ -109,9 +111,9 @@ async function shrinkImage({ imgPath, quality, dest }) {
 
     let plugins;
     if (compressType === "lossy") {
-      plugins = [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] })];
+      plugins = [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] }), imageminGiflossy({ lossy: 80 })];
     } else {
-      plugins = [imageminJpegtran(), imageminOptipng()];
+      plugins = [imageminJpegtran(), imageminOptipng(), imageminGifsicle()];
     }
 
     const files = await imagemin([slash(imgPath)], {

@@ -1,4 +1,4 @@
-function createMenuTemplate(isMac, isDev, app, createAboutWindow) {
+function createMenuTemplate(isMac, isDev, app, createAboutWindow, mainWindow) {
   return [
     ...(isMac
       ? [
@@ -6,33 +6,86 @@ function createMenuTemplate(isMac, isDev, app, createAboutWindow) {
             label: app.name,
             submenu: [
               {
-                label: "About",
+                label: "About ImageShrink",
                 click: createAboutWindow,
               },
               {
-                label: "Quit",
+                type: "separator",
+              },
+              {
+                role: "hide",
+              },
+              {
+                role: "hideOthers",
+              },
+              {
+                role: "unhide",
+              },
+              {
+                type: "separator",
+              },
+              {
+                label: "Quit ImageShrink",
                 click: () => app.quit(),
+                accelerator: "Command+Q",
               },
             ],
           },
         ]
       : []),
     {
-      role: "fileMenu",
+      label: "File",
+      submenu: [isMac ? { role: "close" } : { role: "quit" }],
     },
-    ...(!isMac
-      ? [
-          {
-            label: "Help",
-            submenu: [
+    {
+      label: "View",
+      submenu: [
+        { role: "reload" },
+        { role: "forcereload" },
+        { type: "separator" },
+        { role: "resetzoom" },
+        { role: "zoomin" },
+        { role: "zoomout" },
+        { type: "separator" },
+        { role: "togglefullscreen" },
+      ],
+    },
+    {
+      label: "Window",
+      submenu: [
+        {
+          role: "minimize",
+        },
+        ...(isMac
+          ? [
+              { role: "close" },
+              { type: "separator" },
+              { role: "front" },
+              { type: "separator" },
               {
-                label: "About",
-                click: createAboutWindow,
+                label: "ImageShrink",
+                click: () => mainWindow.show(),
               },
-            ],
+            ]
+          : [{ role: "close" }]),
+      ],
+    },
+    {
+      role: "help",
+      submenu: [
+        {
+          label: "About ImageShrink",
+          click: createAboutWindow,
+        },
+        {
+          label: "Learn More",
+          click: async () => {
+            const { shell } = require("electron");
+            await shell.openExternal("https://github.com/FromZeroToCicero/ImageShrink");
           },
-        ]
-      : []),
+        },
+      ],
+    },
     ...(isDev
       ? [
           {
