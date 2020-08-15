@@ -6,6 +6,15 @@
 
 .about {
   width: 100%;
+  margin-top: 25px;
+}
+
+.about-header {
+  margin-bottom: 20px;
+}
+
+.about-paragraph {
+  text-align: justify !important;
 }
 
 .btn {

@@ -56,8 +56,8 @@ function createMainWindow() {
 function createAboutWindow() {
   aboutWindow = new BrowserWindow({
     title: "About ImageShrink",
-    width: 300,
-    height: 300,
+    width: 400,
+    height: 400,
     icon: `${__dirname}/assets/icons/Icon_256x256.png`,
     resizable: isDev,
     backgroundColor: "#fff",
