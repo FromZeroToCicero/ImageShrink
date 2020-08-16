@@ -1,4 +1,4 @@
-<img src="./assets/app-logo.png" alt="ImageShrink" width="400" />
+<img src="./assets/app-logo.png" alt="ImageShrink" width="300" />
 
 ## **Description**
 
