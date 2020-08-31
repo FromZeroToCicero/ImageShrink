@@ -64,6 +64,7 @@ function createAboutWindow() {
   });
 
   aboutWindow.loadURL(`file://${__dirname}/app/about.html`);
+  aboutWindow.setMenuBarVisibility(false);
 }
 
 app.on("ready", () => {
