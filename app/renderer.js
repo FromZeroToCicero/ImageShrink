@@ -4,6 +4,8 @@ const container = document.getElementById("container");
 const form = document.getElementById("image-form");
 const slider = document.getElementById("slider");
 const img = document.getElementById("img");
+const browseBtn = document.getElementById("browse-btn");
+const uploadImageInput = document.getElementById("upload-image-input");
 const spinner = document.getElementById("spinner");
 const outputSpinner = document.getElementById("output-spinner");
 const compressType = document.getElementById("compress-type");
@@ -53,10 +55,7 @@ editIcon.addEventListener("click", () => {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  spinner.classList.remove("hidden");
-  submitBtn.classList.add("disabled");
-  output.classList.remove("output");
-  output.classList.add("output-loading");
+  blockUserFromSubmitting();
 
   const imgPath = img.files[0].path;
   const quality = slider.value;
@@ -70,10 +69,7 @@ form.addEventListener("submit", (e) => {
 
 // On image minimized
 ipcRenderer.on("image:optimised", () => {
-  spinner.classList.add("hidden");
-  submitBtn.classList.remove("disabled");
-  output.classList.remove("output-loading");
-  output.classList.add("output");
+  unblockUserFromSubmitting();
 
   let alertText;
   if (compressType.checked) {
@@ -89,10 +85,7 @@ ipcRenderer.on("image:optimised", () => {
 
 // On image failed optimise
 ipcRenderer.on("image:not-optimised", () => {
-  spinner.classList.add("hidden");
-  submitBtn.classList.remove("disabled");
-  output.classList.remove("output-loading");
-  output.classList.add("output");
+  unblockUserFromSubmitting();
 
   M.toast({
     html: `Failed to resize image.`,
@@ -143,4 +136,24 @@ function formatOutputPath(path) {
   } else {
     return `${splitPath[0]}/${splitPath[1]}/${splitPath[2]}/.../${splitPath[splitPath.length - 1]}`;
   }
+}
+
+function blockUserFromSubmitting() {
+  uploadImageInput.disabled = true;
+  img.disabled = true;
+  browseBtn.classList.add("disable-btn");
+  spinner.classList.remove("hidden");
+  submitBtn.classList.add("disabled");
+  output.classList.remove("output");
+  output.classList.add("output-loading");
+}
+
+function unblockUserFromSubmitting() {
+  uploadImageInput.disabled = false;
+  img.disabled = false;
+  browseBtn.classList.remove("disable-btn");
+  spinner.classList.add("hidden");
+  submitBtn.classList.remove("disabled");
+  output.classList.remove("output-loading");
+  output.classList.add("output");
 }

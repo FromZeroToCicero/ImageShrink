@@ -47,6 +47,14 @@
   display: none;
 }
 
+.disable-btn {
+  pointer-events: none;
+  background-color: #DFDFDF !important;
+  box-shadow: none;
+  color: #9F9F9F !important;
+  cursor: default;
+}
+
 .spinner-container {
   margin-top: 20px;
 }
