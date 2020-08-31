@@ -111,7 +111,7 @@ async function shrinkImage({ imgPath, quality, dest }) {
 
     let plugins;
     if (compressType === "lossy") {
-      plugins = [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] }), imageminGiflossy({ lossy: 80 })];
+      plugins = [imageminMozjpeg({ quality }), imageminPngquant({ quality: [pngQuality, pngQuality] }), imageminGiflossy({ lossy: quality })];
     } else {
       plugins = [imageminJpegtran(), imageminOptipng(), imageminGifsicle()];
     }

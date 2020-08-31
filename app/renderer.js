@@ -1,5 +1,6 @@
 const { ipcRenderer } = require("electron");
 
+const container = document.getElementById("container");
 const form = document.getElementById("image-form");
 const slider = document.getElementById("slider");
 const img = document.getElementById("img");
@@ -13,6 +14,11 @@ const output = document.getElementById("output");
 const editIcon = document.getElementById("edit-icon");
 
 let outputPath;
+
+const isMac = process.platform === "darwin" ? true : false;
+if (!isMac) {
+  container.style.marginTop = "40px";
+}
 
 compressType.addEventListener("change", (e) => {
   e.preventDefault();
@@ -31,7 +37,7 @@ compressType.addEventListener("change", (e) => {
 // On upload image
 img.addEventListener("change", (e) => {
   e.preventDefault();
-  if (img.files[0]) {
+  if (img.files[0] && outputSpinner.classList.contains("hidden")) {
     submitBtn.classList.remove("disabled");
   } else {
     submitBtn.classList.add("disabled");
@@ -48,6 +54,7 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   spinner.classList.remove("hidden");
+  submitBtn.classList.add("disabled");
   output.classList.remove("output");
   output.classList.add("output-loading");
 
@@ -64,6 +71,7 @@ form.addEventListener("submit", (e) => {
 // On image minimized
 ipcRenderer.on("image:optimised", () => {
   spinner.classList.add("hidden");
+  submitBtn.classList.remove("disabled");
   output.classList.remove("output-loading");
   output.classList.add("output");
 
@@ -82,6 +90,7 @@ ipcRenderer.on("image:optimised", () => {
 // On image failed optimise
 ipcRenderer.on("image:not-optimised", () => {
   spinner.classList.add("hidden");
+  submitBtn.classList.remove("disabled");
   output.classList.remove("output-loading");
   output.classList.add("output");
 
@@ -92,12 +101,16 @@ ipcRenderer.on("image:not-optimised", () => {
 
 // On select output path for image
 ipcRenderer.on("image:select-output-pending", () => {
+  submitBtn.classList.add("disabled");
   outputSpinner.classList.remove("hidden");
 });
 
 // On finish select output path
 ipcRenderer.on("image:select-output-finished", () => {
   outputSpinner.classList.add("hidden");
+  if (img.files[0]) {
+    submitBtn.classList.remove("disabled");
+  }
 });
 
 // Get settings
@@ -114,6 +127,9 @@ ipcRenderer.on("image:selected-output", (e, path) => {
   document.getElementById("output-path").innerText = displayOutputPath;
 
   outputSpinner.classList.add("hidden");
+  if (img.files[0]) {
+    submitBtn.classList.remove("disabled");
+  }
 
   ipcRenderer.send("settings:set", {
     outputPath: path,
