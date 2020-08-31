@@ -4,38 +4,17 @@
   "version": "1.0.0",
   "description": "Image size shrinking app for optimisation of web performances",
   "main": "main.js",
-  "build": {
-    "appId": "com.electron.ImageShrink",
-    "productName": "ImageShrink",
-    "mac": {
-      "target": "pkg",
-      "category": "public.app-category.photography",
-      "identity": null,
-      "icon": "assets/icons/mac/icon.icns"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icons/win/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false
-    }
-  },
   "scripts": {
     "start": "electron .",
     "dev": "nodemon --exec electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps",
-    "package-mac": "electron-packager . --overwrite --asar --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . --overwrite --asar --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=false --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ImageShrink\"",
-    "package-linux": "electron-packager . --overwrite --asar --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=false --out=release-builds"
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --out=release-builds",
+    "package-win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ImageShrink\"",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --out=release-builds"
   },
   "author": "Sima Mircea",
   "license": "MIT",
   "devDependencies": {
     "electron": "^9.1.2",
-    "electron-builder": "^22.8.0",
     "electron-packager": "^15.0.0",
     "nodemon": "^2.0.4"
   },
